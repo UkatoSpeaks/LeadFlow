@@ -62,6 +62,46 @@ npm run dev
 
 The app runs at http://localhost:3000.
 
+## API
+
+| Method | Path | Description | Success | Errors |
+|---|---|---|---|---|
+| GET | `/health` | API and database check | 200 | 503 |
+| GET | `/leads` | List leads; optional `status` and `search` query parameters | 200 | 422 |
+| POST | `/leads` | Create a lead | 201 | 422 |
+| GET | `/leads/{id}` | Get one lead | 200 | 404, 422 |
+| PATCH | `/leads/{id}` | Update a lead's status | 200 | 404, 422 |
+| GET | `/leads/{id}/discussions` | List a lead's discussions, newest first | 200 | 404, 422 |
+| POST | `/leads/{id}/discussions` | Add a discussion, optionally with a follow-up date | 201 | 404, 422 |
+
+Status values are `new`, `contacted`, `qualified`, `proposal_sent`, `won` and `lost`.
+
+Every lead in a response carries `last_note` and `last_discussion_at`, taken from its most recent discussion. Follow-up dates must include a timezone offset, for example `2026-10-14T10:30:00+05:30`.
+
+Every error uses the same shape:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Request validation failed",
+    "fields": [{ "field": "name", "message": "String should have at least 1 character" }]
+  }
+}
+```
+
+`fields` is only present on validation errors.
+
+## Tests
+
+```powershell
+cd backend
+venv\Scripts\activate
+pytest
+```
+
+The tests run against the database configured in `backend/.env`. Each test runs inside a transaction that is rolled back, so no test data is left behind.
+
 ## Environment variables
 
 | File | Variable | Description |
