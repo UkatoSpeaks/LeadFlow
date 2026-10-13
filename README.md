@@ -42,9 +42,10 @@ pip install -r requirements.txt
 copy .env.example .env         # macOS/Linux: cp .env.example .env
 ```
 
-Edit `backend/.env` with your PostgreSQL credentials, then start the API:
+Edit `backend/.env` with your PostgreSQL credentials, then create the tables and start the API:
 
 ```powershell
+alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
