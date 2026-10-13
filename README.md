@@ -195,11 +195,3 @@ Frontend unit tests (12), covering the date logic behind "due today", "overdue" 
 cd frontend
 npm test
 ```
-
-## Use of AI
-
-This project was built with [Claude Code](https://claude.com/claude-code), Anthropic's AI coding assistant, and it did most of the implementation.
-
-- **What the AI did:** analysed the brief and proposed the plan, then wrote the backend, the frontend, the tests, the seed script and this README, one step at a time. It also ran the tests and drove the app in a headless browser to check each flow, and took the screenshots above.
-- **What I did:** chose the environment (local PostgreSQL, no Docker), approved the plan and directed each step, set the visual direction, ran the app, and made every commit.
-- **Decisions the AI proposed:** the follow-up rule described under Design decisions was the AI's recommendation, which I accepted.
