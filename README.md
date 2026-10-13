@@ -49,6 +49,14 @@ alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
+Optionally load sample data (8 leads with discussions, including follow-ups that are due today, overdue and upcoming):
+
+```powershell
+python seed.py
+```
+
+`python seed.py --reset` deletes all existing leads and discussions first.
+
 The API runs at http://localhost:8000. Check http://localhost:8000/health to confirm the database connection; interactive docs are at http://localhost:8000/docs.
 
 ### 3. Frontend
@@ -77,6 +85,8 @@ The app runs at http://localhost:3000.
 Status values are `new`, `contacted`, `qualified`, `proposal_sent`, `won` and `lost`.
 
 Every lead in a response carries `last_note` and `last_discussion_at`, taken from its most recent discussion. Follow-up dates must include a timezone offset, for example `2026-10-14T10:30:00+05:30`.
+
+A lead's `next_follow_up_at` always mirrors its latest discussion: saving a discussion with a follow-up date sets it, and saving one without a date clears it, which is how a follow-up is marked as done.
 
 Every error uses the same shape:
 
