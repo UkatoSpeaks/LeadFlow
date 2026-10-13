@@ -6,19 +6,21 @@ import AddLeadDialog from "@/components/AddLeadDialog";
 import Button from "@/components/Button";
 import Header from "@/components/Header";
 import LeadList from "@/components/LeadList";
+import LeadTimelineDialog from "@/components/LeadTimelineDialog";
 import ListState, { ListSkeleton } from "@/components/ListState";
 import SearchBar from "@/components/SearchBar";
 import StatusFilter from "@/components/StatusFilter";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useLeads } from "@/hooks/useLeads";
 import { useNow } from "@/hooks/useNow";
-import type { LeadStatus } from "@/lib/types";
+import type { Lead, LeadStatus } from "@/lib/types";
 
 /** The single screen of the app: toolbar, pinned follow-ups and the lead list. */
 export default function LeadBoard() {
   const [status, setStatus] = useState<LeadStatus | undefined>();
   const [search, setSearch] = useState("");
   const [isAddingLead, setIsAddingLead] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const debouncedSearch = useDebouncedValue(search.trim());
   const now = useNow();
 
@@ -82,10 +84,15 @@ export default function LeadBoard() {
         ) : (
           // Dimmed while a new filter or search is loading over the previous results.
           <div className={isPlaceholderData ? "opacity-60 transition-opacity" : "transition-opacity"}>
-            <LeadList leads={leads} now={now} onSelect={() => {}} />
+            <LeadList leads={leads} now={now} onSelect={setSelectedLead} />
           </div>
         )}
       </main>
+
+      {selectedLead && now && (
+        // Keyed by lead so each one opens with a fresh form.
+        <LeadTimelineDialog key={selectedLead.id} lead={selectedLead} now={now} onClose={() => setSelectedLead(null)} />
+      )}
 
       {isAddingLead && (
         <AddLeadDialog

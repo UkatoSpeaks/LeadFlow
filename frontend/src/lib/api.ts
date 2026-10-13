@@ -84,6 +84,10 @@ export const api = {
     return request<Lead>("/leads", { method: "POST", body: JSON.stringify(input) });
   },
 
+  getLead(leadId: number): Promise<Lead> {
+    return request<Lead>(`/leads/${leadId}`);
+  },
+
   updateLeadStatus(leadId: number, status: LeadStatus): Promise<Lead> {
     return request<Lead>(`/leads/${leadId}`, { method: "PATCH", body: JSON.stringify({ status }) });
   },
