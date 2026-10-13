@@ -58,13 +58,20 @@ def test_follow_up_date_updates_the_lead(client: TestClient, lead: dict) -> None
     assert datetime.fromisoformat(follow_up) == datetime.fromisoformat("2030-01-15T10:30:00+05:30")
 
 
-def test_discussion_without_follow_up_keeps_the_existing_one(client: TestClient, lead: dict) -> None:
+def test_discussion_without_follow_up_clears_the_existing_one(client: TestClient, lead: dict) -> None:
     add_discussion(client, lead["id"], "Call back", follow_up_at="2030-01-15T10:30:00+05:30")
-    add_discussion(client, lead["id"], "Quick note")
+    add_discussion(client, lead["id"], "Spoke to them, nothing further planned")
+
+    assert client.get(f"/leads/{lead['id']}").json()["next_follow_up_at"] is None
+
+
+def test_newer_follow_up_replaces_the_existing_one(client: TestClient, lead: dict) -> None:
+    add_discussion(client, lead["id"], "Call back", follow_up_at="2030-01-15T10:30:00+05:30")
+    add_discussion(client, lead["id"], "Rescheduled", follow_up_at="2030-02-01T09:00:00+05:30")
 
     follow_up = client.get(f"/leads/{lead['id']}").json()["next_follow_up_at"]
 
-    assert datetime.fromisoformat(follow_up) == datetime.fromisoformat("2030-01-15T10:30:00+05:30")
+    assert datetime.fromisoformat(follow_up) == datetime.fromisoformat("2030-02-01T09:00:00+05:30")
 
 
 def test_discussion_requires_a_note(client: TestClient, lead: dict) -> None:

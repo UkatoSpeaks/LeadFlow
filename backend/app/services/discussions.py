@@ -20,9 +20,9 @@ def create_discussion(db: Session, lead_id: int, payload: DiscussionCreate) -> D
     lead = get_lead(db, lead_id)
     discussion = Discussion(lead_id=lead.id, note=payload.note, follow_up_at=payload.follow_up_at)
     db.add(discussion)
-    # The lead keeps its current follow-up unless this discussion sets a new one.
-    if payload.follow_up_at is not None:
-        lead.next_follow_up_at = payload.follow_up_at
+    # The lead's follow-up always mirrors its latest discussion, so logging one
+    # without a date marks the previous follow-up as done.
+    lead.next_follow_up_at = payload.follow_up_at
     db.commit()
     db.refresh(discussion)
     return discussion
