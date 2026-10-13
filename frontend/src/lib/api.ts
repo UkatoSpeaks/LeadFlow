@@ -28,6 +28,23 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Splits a failed request into messages for a form: one per field the API
+ * rejected, or a single general message when the failure is not about a field.
+ */
+export function toFormErrors(error: unknown): { fields: Record<string, string>; general: string | null } {
+  if (error instanceof ApiError && error.fields.length > 0) {
+    return {
+      fields: Object.fromEntries(error.fields.map(({ field, message }) => [field, message])),
+      general: null,
+    };
+  }
+  return {
+    fields: {},
+    general: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+  };
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {

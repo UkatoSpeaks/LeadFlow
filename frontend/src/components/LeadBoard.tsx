@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import AddLeadDialog from "@/components/AddLeadDialog";
+import Button from "@/components/Button";
 import Header from "@/components/Header";
 import LeadList from "@/components/LeadList";
 import ListState, { ListSkeleton } from "@/components/ListState";
@@ -16,6 +18,7 @@ import type { LeadStatus } from "@/lib/types";
 export default function LeadBoard() {
   const [status, setStatus] = useState<LeadStatus | undefined>();
   const [search, setSearch] = useState("");
+  const [isAddingLead, setIsAddingLead] = useState(false);
   const debouncedSearch = useDebouncedValue(search.trim());
   const now = useNow();
 
@@ -33,7 +36,11 @@ export default function LeadBoard() {
 
   return (
     <>
-      <Header />
+      <Header>
+        <Button onClick={() => setIsAddingLead(true)}>
+          <span aria-hidden>+</span> Add lead
+        </Button>
+      </Header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6">
         <div>
@@ -66,7 +73,11 @@ export default function LeadBoard() {
               action={{ label: "Clear filters", onClick: clearFilters }}
             />
           ) : (
-            <ListState title="No leads yet" message="Add your first lead to start tracking discussions." />
+            <ListState
+              title="No leads yet"
+              message="Add your first lead to start tracking discussions."
+              action={{ label: "Add lead", onClick: () => setIsAddingLead(true) }}
+            />
           )
         ) : (
           // Dimmed while a new filter or search is loading over the previous results.
@@ -75,6 +86,17 @@ export default function LeadBoard() {
           </div>
         )}
       </main>
+
+      {isAddingLead && (
+        <AddLeadDialog
+          onClose={() => setIsAddingLead(false)}
+          onCreated={() => {
+            // Clear the filters so the new lead is visible wherever the user was.
+            clearFilters();
+            setIsAddingLead(false);
+          }}
+        />
+      )}
     </>
   );
 }
