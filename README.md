@@ -104,6 +104,8 @@ Every error uses the same shape:
 
 ## Tests
 
+Backend API tests:
+
 ```powershell
 cd backend
 venv\Scripts\activate
@@ -111,6 +113,13 @@ pytest
 ```
 
 The tests run against the database configured in `backend/.env`. Each test runs inside a transaction that is rolled back, so no test data is left behind.
+
+Frontend unit tests, covering the date logic behind "due today", "overdue" and "time ago":
+
+```powershell
+cd frontend
+npm test
+```
 
 ## Environment variables
 
